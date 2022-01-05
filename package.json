@@ -1,0 +1,26 @@
+{
+  "name": "go-time",
+  "version": "1.0.0",
+  "description": "Define recurring blocks of time and test for containment",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "eslint . --ext .ts && tsc",
+    "test": "jest",
+    "lint": "eslint . --ext .ts"
+  },
+  "keywords": [
+    "date",
+    "time",
+    "recurring"
+  ],
+  "author": "Nimai C Malle",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/jest": "^27.4.0",
+    "@typescript-eslint/parser": "^5.9.0",
+    "eslint": "^8.6.0",
+    "jest": "^27.4.5",
+    "ts-jest": "^27.1.2",
+    "typescript": "^4.5.4"
+  }
+}

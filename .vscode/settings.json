@@ -1,0 +1,11 @@
+{
+  "jest.jestCommandLine": "npx jest",
+  "eslint.lintTask.enable": true,
+  "prettier.semi": false,
+  "prettier.singleQuote": true,
+  "typescript.preferences.quoteStyle": "single",
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.tabSize": 2,
+  "editor.formatOnSave": true,
+  "prettier.printWidth": 160
+}
