@@ -11,7 +11,7 @@ export class WeekOfYearLimit extends GoTimeLimit {
 
   protected toNumber(n: string): number {
     const result = super.toNumber(n)
-    if (isNaN(result) || result < 1 || result > 52) throw new Error(`Invalid year ${n}`)
+    if (isNaN(result) || result < 1 || result > 52) throw new Error(`Invalid week of year ${n}`)
     return result
   }
 }

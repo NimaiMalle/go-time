@@ -61,3 +61,12 @@ test('Noon to 1PM or Midnight to 1AM GMT', () => {
   // 1PM March 1 2022
   expect(goTime.test(new Date(2022, 2, 1, 13, 0))).toBeFalsy()
 })
+
+test('Day 46', () => {
+  const definition = 'DoY=46'
+  const goTime = new GoTime(definition)
+
+  expect(goTime.test(new Date(2022, 1, 14))).toBeFalsy()
+  expect(goTime.test(new Date(2022, 1, 15))).toBeTruthy()
+  expect(goTime.test(new Date(2022, 1, 16))).toBeFalsy()
+})

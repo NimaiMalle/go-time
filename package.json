@@ -1,6 +1,6 @@
 {
   "name": "go-time",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Define recurring blocks of time and test for containment",
   "main": "dist/index.js",
   "scripts": {
