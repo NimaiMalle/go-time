@@ -50,7 +50,7 @@ This section can declare a single value, a series of comma separated values, or 
 
 ### Multiple Statements
 
-A GoTime definition needs at least one test statement, but can include multiple tests separated by a semicolon. For the entire definition to evaluate to true, a the input Date must pass every test.
+A GoTime definition needs at least one test statement, but can include multiple tests separated by a semicolon. Tests using the same part are OR'd together, so if any one is true, the part test passes. For the entire definition to evaluate to true, a the input Date must pass every part. See the exmaples below.
 
 ## GoTime Examples
 
