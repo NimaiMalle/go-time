@@ -9,6 +9,7 @@ import { WeekOfMonthLimit } from './limits/weekofmonth_limit'
 import { WeekOfYearLimit } from './limits/weekofyear_limit'
 import { YearLimit } from './limits/year_limit'
 import { TimeLimit } from './limits/time_limit'
+import { DatetimeLimit } from './limits/datetime_limit'
 
 export class GoTime {
   constructor(definition: string) {
@@ -79,6 +80,9 @@ export class GoTime {
           break
         case GoTimePart.time:
           limit = new TimeLimit(op, value)
+          break
+        case GoTimePart.datetime:
+          limit = new DatetimeLimit(op, value)
           break
       }
       if (limit) {

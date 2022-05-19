@@ -7,6 +7,7 @@ export enum GoTimePart {
   dayOfMonth = 'dom',
   dayOfWeek = 'dow',
   time = 'time',
+  datetime = 'datetime',
 }
 
 export const GoTimeParts: ReadonlyArray<GoTimePart> = Object.values(GoTimePart)

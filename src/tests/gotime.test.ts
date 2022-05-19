@@ -70,3 +70,28 @@ test('Day 46', () => {
   expect(goTime.test(new Date(2022, 1, 15))).toBeTruthy()
   expect(goTime.test(new Date(2022, 1, 16))).toBeFalsy()
 })
+
+test('Tuesday through Sunday', () => {
+  const definition = 'DoW=Tue-Sun'
+  const goTime = new GoTime(definition)
+
+  expect(goTime.test(new Date('2022-4-4'))).toBeFalsy()
+  expect(goTime.test(new Date('2022-4-7'))).toBeTruthy()
+})
+
+test('Any time, after a certain time', () => {
+  const definition = 'Datetime>=2022-03-20 13:00:00'
+  const goTime = new GoTime(definition)
+
+  expect(goTime.test(new Date('2022-06-01'))).toBeTruthy()
+  expect(goTime.test(new Date('2022-03-20 12:59:00'))).toBeFalsy()
+})
+
+test('Any time, between two datetimes', () => {
+  const definition = 'Datetime=2022-03-20 13:00:00|2022-03-22 05:30:00'
+  const goTime = new GoTime(definition)
+
+  expect(goTime.test(new Date('2022-03-21'))).toBeTruthy()
+  expect(goTime.test(new Date('2022-03-20 12:59:00'))).toBeFalsy()
+  expect(goTime.test(new Date('2022-03-22 06:00:00'))).toBeFalsy()
+})

@@ -16,7 +16,7 @@ export abstract class GoTimeLimit {
     const result = new Array<GoTimeSpan>()
     const values = value.split(',').map((v) => v.trim())
     for (var val of values) {
-      const [start, end] = val.split('-').map((v) => this.toNumber(v.trim()))
+      const [start, end] = val.split(/[-|]/).map((v) => this.toNumber(v.trim()))
       if (start === undefined) {
         throw new Error(`Unable to parse value "${val}"`)
       }
