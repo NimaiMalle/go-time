@@ -47,7 +47,7 @@ export class GoTime {
   }
 
   /**
-   * Returns the next time this Go-Time will be active, or null if no active time is found.  The search is a brute force minute by mibute check, so don't pass in large time spans
+   * Returns the next time this Go-Time will be active, or null if no active time is found.  The search is a brute force minute by minute check, so don't pass in large time spans
    * @param {Date} from Optional date to start checking from, or now in UTC
    * @param {Date} to Optional date to give up the search, or a week from now
    */
