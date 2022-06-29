@@ -13,9 +13,6 @@
     "type": "git",
     "url": "git@github.com:NimaiMalle/go-time.git"
   },
-  "jest": {
-    "globalSetup": "./src/tests/global-setup.js"
-  },
   "scripts": {
     "build": "eslint . --ext .ts && tsc",
     "test": "jest",
