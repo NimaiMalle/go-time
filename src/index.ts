@@ -13,10 +13,11 @@ import { DatetimeLimit } from './limits/datetime_limit'
 
 export class GoTime {
   constructor(definition: string) {
-    this.parse(definition)
+    this.parse((this.definition = definition))
   }
 
-  public test(date: Date): boolean {
+  public test(date: Date | null | undefined): boolean {
+    if (!date) return false
     let result = false
     for (const key in this.limits) {
       const limits = this.limits[key as GoTimePart]
@@ -39,6 +40,36 @@ export class GoTime {
   }
 
   private limits: { [part in GoTimePart]?: Array<GoTimeLimit> } = {}
+  private definition: string
+
+  public toString(): string {
+    return this.definition
+  }
+
+  /**
+   * Returns the next time this Go-Time will be active, or null if no active time is found.  The search is a brute force minute by mibute check, so don't pass in large time spans
+   * @param {Date} from Optional date to start checking from, or now in UTC
+   * @param {Date} to Optional date to give up the search, or a week from now
+   */
+  public next(from?: Date, to?: Date): Date | null {
+    let ts: number
+    if (from) {
+      ts = from.getTime()
+    } else {
+      const d = new Date()
+      const z = d.getTimezoneOffset()
+      ts = d.getTime() + z * 60 * 1000
+    }
+    const end = to ?? ts + 1000 * 60 * 24 * 7
+    while (ts < end) {
+      const d = new Date(ts)
+      if (this.test(d)) {
+        return d
+      }
+      ts += 60 * 1000
+    }
+    return null
+  }
 
   private readonly defParse = new RegExp(`\\s*(${GoTimeParts.join('|')})\\s*(${GoTimeOperators.join('|')})\\s*([^;\\r\\n]+)[;\\r\\n\\s]*`, 'gmi')
 

@@ -11,6 +11,12 @@ test.each`
 });
 */
 
+describe('Timezones', () => {
+  it('should always be UTC', () => {
+    expect(new Date().getTimezoneOffset()).toBe(0)
+  })
+})
+
 test('Halloween week', () => {
   const definition = 'M=Oct; DoM>=24'
   const goTime = new GoTime(definition)
@@ -94,4 +100,39 @@ test('Any time, between two datetimes', () => {
   expect(goTime.test(new Date('2022-03-21'))).toBeTruthy()
   expect(goTime.test(new Date('2022-03-20 12:59:00'))).toBeFalsy()
   expect(goTime.test(new Date('2022-03-22 06:00:00'))).toBeFalsy()
+})
+
+test('Next available', () => {
+  let goTime: GoTime
+  let next: Date | null
+
+  goTime = new GoTime('M=Oct; DoM>=24')
+  next = goTime.next(new Date(2022, 9, 20), new Date(2022, 10, 1))
+  expect(goTime.test(next)).toBeTruthy()
+
+  goTime = new GoTime('DoM<7; DoW=Sat,Sun')
+  next = goTime.next(new Date(2022, 8, 28), new Date(2022, 9, 7))
+  expect(goTime.test(next)).toBeTruthy()
+
+  goTime = new GoTime('Time=00:00-01:00; Time=12:00-13:00')
+  next = goTime.next(new Date(2022, 2, 1, 18, 5), new Date(2022, 2, 7))
+  expect(goTime.test(next)).toBeTruthy()
+
+  goTime = new GoTime('DoY=46')
+  next = goTime.next(new Date(2022, 1, 14), new Date(2022, 1, 20))
+  expect(goTime.test(next)).toBeTruthy()
+
+  goTime = new GoTime('DoW=Tue-Sun')
+  next = goTime.next(new Date('2022-4-4'), new Date('2022-4-9'))
+  expect(goTime.test(next)).toBeTruthy()
+
+  goTime = new GoTime('Datetime>=2022-03-20 13:00:00')
+  next = goTime.next(new Date('2022-03-20 12:00:00'), new Date('2022-03-27'))
+  expect(goTime.test(next)).toBeTruthy()
+
+  goTime = new GoTime('Datetime=2022-03-20 13:00:00|2022-03-22 05:30:00')
+  next = goTime.next(new Date('2022-03-18'), new Date('2022-03-30'))
+  expect(goTime.test(next)).toBeTruthy()
+  next = goTime.next(new Date('2022-03-25'), new Date('2022-03-30'))
+  expect(goTime.test(next)).toBeFalsy()
 })
