@@ -7,6 +7,7 @@ const config = {
   testMatch: ['**/*.test.ts'],
   transform: { '^.+\\.(ts|tsx)$': 'ts-jest' },
   timers: 'modern',
+  globalSetup: '<rootDir>/src/tests/global-setup.js',
 }
 
 module.exports = config
