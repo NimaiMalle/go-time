@@ -1,4 +1,5 @@
 import { GoTimePart } from '../enums/gotime_parts'
+import { GoTimeUnit } from '../enums/gotime_unts'
 import { GoTimeLimit } from './_limit'
 
 export class WeekOfMonthLimit extends GoTimeLimit {
@@ -10,6 +11,10 @@ export class WeekOfMonthLimit extends GoTimeLimit {
     const firstOfMonth = new Date(date.getFullYear(), date.getMonth(), 1)
     const week = Math.ceil(((date.getTime() - firstOfMonth.getTime()) / 86400000 + firstOfMonth.getDay() + 1) / 7)
     return week - startWeek
+  }
+
+  protected override computeUnit() {
+    return GoTimeUnit.week
   }
 
   protected toNumber(n: string): number {

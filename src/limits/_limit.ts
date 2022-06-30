@@ -1,15 +1,18 @@
 import { GoTimeOperator } from '../enums/gotime_operator'
 import { GoTimePart } from '../enums/gotime_parts'
+import { GoTimeUnit } from '../enums/gotime_unts'
 import { GoTimeSpan } from '../gotime_span'
 
 export abstract class GoTimeLimit {
   abstract readonly part: GoTimePart
+  unit: GoTimeUnit
   readonly operator: GoTimeOperator
   readonly values: ReadonlyArray<GoTimeSpan>
 
   constructor(op: GoTimeOperator, value: string) {
     this.operator = op
     this.values = this.parseValue(value)
+    this.unit = this.computeUnit()
   }
 
   protected parseValue(value: string): Array<GoTimeSpan> {
@@ -24,6 +27,9 @@ export abstract class GoTimeLimit {
     }
     return result
   }
+
+  // Called after values and operator are set to compute a unit based on the values
+  protected abstract computeUnit(): GoTimeUnit
 
   protected toNumber(n: string): number {
     if (!n) return Number.NaN

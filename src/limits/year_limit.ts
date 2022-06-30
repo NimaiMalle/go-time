@@ -1,4 +1,5 @@
 import { GoTimePart } from '../enums/gotime_parts'
+import { GoTimeUnit } from '../enums/gotime_unts'
 import { GoTimeLimit } from './_limit'
 
 export class YearLimit extends GoTimeLimit {
@@ -6,6 +7,10 @@ export class YearLimit extends GoTimeLimit {
 
   protected getCurrentValue(date: Date): number {
     return date.getFullYear()
+  }
+
+  protected override computeUnit() {
+    return GoTimeUnit.year
   }
 
   protected toNumber(n: string): number {

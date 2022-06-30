@@ -1,4 +1,5 @@
 import { GoTimePart } from '../enums/gotime_parts'
+import { GoTimeUnit } from '../enums/gotime_unts'
 import { GoTimeLimit } from './_limit'
 
 export class DayOfYearLimit extends GoTimeLimit {
@@ -7,6 +8,10 @@ export class DayOfYearLimit extends GoTimeLimit {
   protected getCurrentValue(date: Date): number {
     const doy = (Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) - Date.UTC(date.getFullYear(), 0, 0)) / 24 / 60 / 60 / 1000
     return doy
+  }
+
+  protected override computeUnit() {
+    return GoTimeUnit.day
   }
 
   protected toNumber(n: string): number {

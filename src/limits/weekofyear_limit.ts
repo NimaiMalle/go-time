@@ -1,4 +1,5 @@
 import { GoTimePart } from '../enums/gotime_parts'
+import { GoTimeUnit } from '../enums/gotime_unts'
 import { GoTimeLimit } from './_limit'
 
 export class WeekOfYearLimit extends GoTimeLimit {
@@ -7,6 +8,10 @@ export class WeekOfYearLimit extends GoTimeLimit {
   protected getCurrentValue(date: Date): number {
     const start = new Date(date.getFullYear(), 0, 1)
     return Math.ceil(((date.getTime() - start.getTime()) / 86400000 + start.getDay() + 1) / 7)
+  }
+
+  protected override computeUnit() {
+    return GoTimeUnit.week
   }
 
   protected toNumber(n: string): number {

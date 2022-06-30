@@ -1,5 +1,6 @@
 import { GoTimeDays } from '../enums/gotime_day'
 import { GoTimePart } from '../enums/gotime_parts'
+import { GoTimeUnit } from '../enums/gotime_unts'
 import { GoTimeLimit } from './_limit'
 
 export class DayOfWeekLimit extends GoTimeLimit {
@@ -8,6 +9,10 @@ export class DayOfWeekLimit extends GoTimeLimit {
   protected getCurrentValue(date: Date): number {
     const dow = date.getDay()
     return dow === 0 ? 7 : dow // 1 = Monday, 7 = Sunday
+  }
+
+  protected override computeUnit() {
+    return GoTimeUnit.day
   }
 
   protected toNumber(n: string): number {

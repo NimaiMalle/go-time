@@ -1,5 +1,6 @@
 import { GoTimeMonths } from '../enums/gotime_month'
 import { GoTimePart } from '../enums/gotime_parts'
+import { GoTimeUnit } from '../enums/gotime_unts'
 import { GoTimeLimit } from './_limit'
 
 export class MonthLimit extends GoTimeLimit {
@@ -7,6 +8,10 @@ export class MonthLimit extends GoTimeLimit {
 
   protected getCurrentValue(date: Date): number {
     return date.getMonth() + 1
+  }
+
+  protected override computeUnit() {
+    return GoTimeUnit.month
   }
 
   protected toNumber(n: string): number {

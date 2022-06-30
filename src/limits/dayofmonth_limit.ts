@@ -1,4 +1,5 @@
 import { GoTimePart } from '../enums/gotime_parts'
+import { GoTimeUnit } from '../enums/gotime_unts'
 import { GoTimeLimit } from './_limit'
 
 export class DayOfMonthLimit extends GoTimeLimit {
@@ -6,6 +7,10 @@ export class DayOfMonthLimit extends GoTimeLimit {
 
   protected getCurrentValue(date: Date): number {
     return date.getDate()
+  }
+
+  protected override computeUnit() {
+    return GoTimeUnit.day
   }
 
   protected toNumber(n: string): number {

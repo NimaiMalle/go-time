@@ -10,10 +10,12 @@ import { WeekOfYearLimit } from './limits/weekofyear_limit'
 import { YearLimit } from './limits/year_limit'
 import { TimeLimit } from './limits/time_limit'
 import { DatetimeLimit } from './limits/datetime_limit'
+import { GoTimeUnit, GoTimeUnits } from './enums/gotime_unts'
 
 export class GoTime {
   constructor(definition: string) {
     this.parse((this.definition = definition))
+    this._unit = this.computeUnit()
   }
 
   public test(date: Date | null | undefined): boolean {
@@ -41,41 +43,123 @@ export class GoTime {
 
   private limits: { [part in GoTimePart]?: Array<GoTimeLimit> } = {}
   private definition: string
+  private _unit: GoTimeUnit // Biggest step in time we can take when searching ahead
+  public get unit() {
+    return this._unit
+  }
 
   public toString(): string {
     return this.definition
+  }
+
+  protected computeUnit() {
+    let unitIndex = GoTimeUnits.length - 1
+    for (var key in this.limits) {
+      const part = key as GoTimePart
+      const limits = this.limits[part]
+      if (limits) {
+        for (var limit of limits) {
+          const index = GoTimeUnits.indexOf(limit.unit)
+          if (index < unitIndex) unitIndex = index
+        }
+      }
+    }
+    const unit = GoTimeUnits[unitIndex]
+    console.log(`${unit} : ${this.definition}`)
+    return unit
   }
 
   /**
    * Returns the next time this Go-Time will be active, or null if no active time is found.  The search is a brute force minute by minute check, so don't pass in large time spans
    * @param {Date} from Optional date to start checking from, or now in UTC
    * @param {Date} to Optional date to give up the search, or a week from now
+   * @param {GoTimeUnit} unit Optional unit to step by through time.  Will default to largest step viable based on definition.  Also see `step`
+   * @param {number} step Optional step or stride to sample the from-to range.  Make sure this won't skip over a potential active time based on your Go-Time definition.
    */
-  public next(from?: Date, to?: Date): Date | null {
+  public next(from?: Date, to?: Date, unit: GoTimeUnit | null = null, step: number = 1): Date | null {
+    if (!unit) {
+      unit = this._unit
+    }
+
     let ts: number
     if (from) {
       ts = from.getTime()
     } else {
+      // If there's no from time supplied, use "now" in UTC
       const d = new Date()
       const z = d.getTimezoneOffset()
       ts = d.getTime() + z * 60 * 1000
     }
-    const end = to ?? ts + 1000 * 60 * 24 * 7
-    while (ts < end) {
-      const d = new Date(ts)
-      if (this.test(d)) {
-        return d
-      }
-      ts += 60 * 1000
+    let d = new Date(ts)
+    // Go-Time doesn't go down to second granularity, so zero out seconds and milliseconds
+    d.setSeconds(0)
+    d.setMilliseconds(0)
+
+    // Depending on the units, we have different functions for moving through time
+    // Things like leapyear and days in a month are considered for
+    const stepFunctions: { [k in GoTimeUnit]: (v: number) => void } = {
+      m: (v: number) => (d = new Date((ts += v * 1000 * 60))),
+      h: (v: number) => (d = new Date((ts += v * 1000 * 60 * 60))),
+      d: (v: number) => {
+        d.setDate(d.getDate() + v)
+        ts = d.getTime()
+      },
+      w: (v: number) => {
+        d.setDate(d.getDate() + v * 7)
+        ts = d.getTime()
+      },
+      M: (v: number) => {
+        const o = d.getDate()
+        d.setMonth(d.getMonth() + v)
+        if (d.getDate() != o) d.setDate(0)
+        ts = d.getTime()
+      },
+      y: (v: number) => {
+        const o = d.getDate()
+        d.setFullYear(d.getFullYear() + v)
+        if (d.getDate() != o) d.setDate(0)
+        ts = d.getTime()
+      },
     }
-    return null
+
+    // Table of next smaller units
+    let unitIndex = GoTimeUnits.indexOf(unit)
+
+    // Step forward in time, until we find a time that is active (tests true)
+    let stepFn = stepFunctions[unit]
+    const end = to ? to.getTime() : ts + 1000 * 60 * 24 * 7 // ~1 week
+    const start = ts
+    while (ts < end) {
+      if (this.test(d)) break
+      stepFn(step)
+    }
+
+    // If we found an active datetime...
+    if (ts < end || unit != GoTimeUnit.minute) {
+      // If we were stepping in units greater than one minute, we
+      //  need start stepping back in successively smaller units
+      //  until we get to the first minute that tests true
+      let smallerUnits: GoTimeUnit | null = unitIndex >= 0 ? GoTimeUnits[--unitIndex] : null
+      stepFn = smallerUnits ? stepFunctions[smallerUnits] : stepFn
+      while (smallerUnits) {
+        stepFn(-1)
+        if (ts < start || !this.test(d)) {
+          stepFn(1)
+          smallerUnits = unitIndex >= 0 ? GoTimeUnits[--unitIndex] : null
+          stepFn = smallerUnits ? stepFunctions[smallerUnits] : stepFn
+        }
+      }
+    }
+
+    // Return null if we didn't find an active time
+    return ts >= end ? null : d
   }
 
-  private readonly defParse = new RegExp(`\\s*(${GoTimeParts.join('|')})\\s*(${GoTimeOperators.join('|')})\\s*([^;\\r\\n]+)[;\\r\\n\\s]*`, 'gmi')
+  private static readonly defParse = new RegExp(`\\s*(${GoTimeParts.join('|')})\\s*(${GoTimeOperators.join('|')})\\s*([^;\\r\\n]+)[;\\r\\n\\s]*`, 'gmi')
 
   private parse(definition: string) {
     definition = definition.toLowerCase()
-    const matches = [...definition.matchAll(this.defParse)]
+    const matches = [...definition.matchAll(GoTime.defParse)]
     if (!matches?.length) {
       throw new Error(`Unable to parse GoTime definition.`)
     }
