@@ -107,6 +107,11 @@ test('Next available', () => {
   let goTime: GoTime
   let next: Date | null
 
+  goTime = new GoTime('DoW=Tue')
+  expect(goTime.unit).toBe(GoTimeUnit.day)
+  next = goTime.next()
+  expect(goTime.test(next)).toBeTruthy()
+
   goTime = new GoTime('Time=00:00-01:00; Time=12:00-13:00')
   expect(goTime.unit).toBe(GoTimeUnit.hour)
   next = goTime.next(new Date(2022, 2, 1, 18, 5), new Date(2022, 2, 7))

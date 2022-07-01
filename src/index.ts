@@ -127,7 +127,7 @@ export class GoTime {
 
     // Step forward in time, until we find a time that is active (tests true)
     let stepFn = stepFunctions[unit]
-    const end = to ? to.getTime() : ts + 1000 * 60 * 24 * 7 // ~1 week
+    const end = to ? to.getTime() : new Date(ts).setDate(new Date(ts).getDate() + 10)
     const start = ts
     while (ts < end) {
       if (this.test(d)) break
