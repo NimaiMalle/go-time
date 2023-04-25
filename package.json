@@ -1,6 +1,6 @@
 {
   "name": "@nimaimalle/go-time",
-  "version": "1.3.3",
+  "version": "1.3.4",
   "description": "Define recurring blocks of time and test for containment",
   "prepublish": "eslint . --ext .ts && tsc",
   "main": "dist/index.js",
