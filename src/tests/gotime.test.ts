@@ -87,7 +87,7 @@ test('Tuesday through Sunday', () => {
 })
 
 test('Any time, after a certain time', () => {
-  const definition = 'Datetime>=2022-03-20 13:00:00'
+  const definition = 'Datetime>=2022-3-20 13:00:00'
   const goTime = new GoTime(definition)
 
   expect(goTime.test(new Date('2022-06-01'))).toBeTruthy()

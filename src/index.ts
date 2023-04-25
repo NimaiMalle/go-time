@@ -65,7 +65,6 @@ export class GoTime {
       }
     }
     const unit = GoTimeUnits[unitIndex]
-    console.log(`${unit} : ${this.definition}`)
     return unit
   }
 
