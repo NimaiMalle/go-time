@@ -46,6 +46,7 @@ export class DatetimeLimit extends GoTimeLimit {
   }
 
   protected toNumber(n: string): number {
+    n = DatetimeLimit.formatDateString(n)
     const result = Date.parse(n)
     if (isNaN(result)) throw new Error(`Invalid datetime ${n}`)
     const date = new Date(result)
@@ -53,20 +54,26 @@ export class DatetimeLimit extends GoTimeLimit {
     if (date.getSeconds() !== 0) throw new Error(`Invalid datetime ${n}.  Can't contain seconds.`)
     return result
   }
-}
 
-function findUnit(date: Date): GoTimeUnit {
-  if (date.getMinutes() == 0) {
-    if (date.getHours() == 0) {
-      if (date.getDate() == 1) {
-        if (date.getMonth() == 0) {
-          return GoTimeUnit.year
-        }
-        return GoTimeUnit.month
-      }
-      return GoTimeUnit.day
-    }
-    return GoTimeUnit.hour
+  protected static padWithZero(value: string): string {
+    return value.padStart(2, '0')
   }
-  return GoTimeUnit.minute
+
+  // Make sure a datetime string uses zero-padded values for month and day (iOS/WebKit bug)
+  protected static formatDateString(dateString: string): string {
+    const dateTimeParts = dateString.split('T')
+    const datePart = dateTimeParts[0]
+    const timePart = dateTimeParts.length > 1 ? dateTimeParts[1] : null
+
+    const dateParts = datePart.split('-')
+    if (dateParts.length !== 3) {
+      throw new Error('Invalid date format')
+    }
+
+    const [year, month, day] = dateParts
+    const paddedMonth = DatetimeLimit.padWithZero(month)
+    const paddedDay = DatetimeLimit.padWithZero(day)
+
+    return timePart ? `${year}-${paddedMonth}-${paddedDay}T${timePart}` : `${year}-${paddedMonth}-${paddedDay}`
+  }
 }
